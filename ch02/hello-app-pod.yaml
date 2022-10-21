@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hello-app
+  namespace: default
+spec:
+  containers:
+  - name: hello-app
+    image: nginx:stable
+    imagePullPolicy: Always
+    livenessProbe:
+      httpGet:
+        path: /
+        port: 8080
+        httpHeaders:
+        - name: Content-Type
+          value: text/plain; livenessProbe
+      periodSeconds: 60
+      timeoutSeconds: 3
+      successThreshold: 1
+      failureThreshold: 1
+    startupProbe:
+      httpGet:
+        path: /
+        port: 8080
+      periodSeconds: 10
+      failureThreshold: 30
+    ports:
+    - containerPort: 8080
+    env:
+    - name: POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.podIP
+    - name: NAMESPACE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namepsace
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spac.nodeName
+    - name: NODE_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+    - name: USER_NAME
+      value: test
+    - name: GREETING
+      value: hello, $(USER_NAME)!
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+    
